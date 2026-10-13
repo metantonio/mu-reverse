@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Capturas de red (evitar subir tráfico real, IPs o credenciales)
+*.pcap
+*.pcapng
+*.cap
+
+# Binarios y volcados de juego
+*.exe
+*.dll
+*.dat
+*.dmp
+*.bin
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs y temporales
+*.log
+scratch/
+tmp/
