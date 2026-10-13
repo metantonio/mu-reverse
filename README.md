@@ -38,7 +38,7 @@ A traves de la captura pasiva en la tarjeta Wi-Fi (`192.168.1.148`), se identifi
 
 ### Extraccion de Entidades del Mundo en Claro (`0xC2`)
 Los paquetes `0xC2` viajan sin cifrado por bloques. A partir de la captura se extrajeron de forma transparente:
-* **Nombres de personajes en el campo visual**: `MiniTasita`, `MystKnight`, `EmasWizard`, `Kvaquiral`, `dfghjk56`, `Sumszord`, `Depocu`, `t10rfin`, `5676uyh`.
+* **Nombres de personajes en el campo visual**: ----
 * **Tiendas personales activas**: Mensajes de broadcast como `"VERY VERY LOW PRICE / FRUITS / SIGN OF LORD"`.
 
 ---
