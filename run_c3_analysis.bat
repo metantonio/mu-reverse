@@ -19,8 +19,8 @@ if not "%OPTION%"=="" goto handle_opt
 echo Selecciona la etapa que deseas ejecutar:
 echo.
 echo   [1] Etapa 1: Inspeccion de Claves y Extraccion de Paquetes (dump_dat + step1)
-echo   [2] Etapa 2: Analisis Estatico de DLLs y Binarios (pe_dir + find_exports)
-echo   [3] Etapa 3: Evaluacion de Hipotesis Criptograficas C3 (step3 + step4b + step5)
+echo   [2] Etapa 2: Analisis Estatico de DLLs y Binarios (pe_dir + find_exports + npcipher_strings)
+echo   [3] Etapa 3: Evaluacion Criptografica C3 (step3 + step4b + step5 + step6 + step7 KPT)
 echo   [4] Etapa 4: Laboratorio de Contramedidas y Deteccion (lab.py + c5_test)
 echo   [5] Ejecutar TODO el pipeline en orden
 echo   [0] Salir
@@ -86,6 +86,9 @@ python step5_inspect.py
 echo.
 echo [*] Probando intercambio de constantes (step6_swap.py)...
 python step6_swap.py
+echo.
+echo [*] Ataque de texto plano conocido cruzando S2C (step7_kpt.py)...
+python step7_kpt.py
 popd
 echo.
 echo [OK] Etapa 3 completada.
@@ -122,12 +125,15 @@ popd
 echo --- [2/4] Analisis de DLLs ---
 python "%C3_DIR%\pe_dir.py"
 python "%C3_DIR%\find_exports.py"
+python "%C3_DIR%\npcipher_strings.py"
 
-echo --- [3/4] Hipotesis C3 ---
+echo --- [3/4] Hipotesis C3 y Ataque KPT ---
 pushd "%C3_DIR%"
 python step3_grid.py
 python step4b_score.py
 python step5_inspect.py
+python step6_swap.py
+python step7_kpt.py
 popd
 
 echo --- [4/4] Laboratorio Defensivo ---

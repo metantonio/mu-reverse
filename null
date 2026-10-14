@@ -1,0 +1,18 @@
+"""STEP8: Profundizar en wsctlcd.dll y wzCipher.dll (no packed) para encontrar
+el cifrador. Extrayemos strings, imports, secciones, y buscamos los valores de
+mod/key/xor del .dat como inmediatos/datos, y nombres de funciones de cifrado."""
+import subprocess
+import sys
+
+def run(cmd):
+    p = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    print(f"--- {cmd} ---")
+    print(p.stdout)
+    if p.stderr: print(p.stderr, file=sys.stderr)
+    print()
+
+# wsctlcd.dll
+run("strings -el 'C:\\Program Files (x86)\\Webzen\\Mu\\wsctlcd.dll' 2>/dev/null | head -200")
+run("strings -eI 'C:\\Program Files (x86)\\Webzen\\Mu\\wsctlcd.dll' 2>/dev/null | grep -iE 'crypt|cipher|enc|decrypt|mod|key|xor|block|packet' | head -50")
+# wzCipher.dll
+run("strings -eI 'C:\\Program Files (x86)\\Webzen\\Mu\\wzCipher.dll' 2>/dev/null | head -50")

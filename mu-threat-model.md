@@ -15,17 +15,25 @@
 |---|---|---|
 | **C1** | 2 byte `[0xC1, len≤255]` | **EN CLARO** (sin cripto observado). S2C muestra opcodes legibles: `0x2A, 0x83, 0x5A (movimiento), 0x0F (tick)`. C2S muestra `0x42`. |
 | **C2** | 3 byte `[0xC2, hi, lo]` | **EN CLARO** — broadcast (nombres, tiendas, entorno). |
-| **C3** | 3 byte `[0xC3, hi, lo]` | **Cifrado custom 8-byte** (ver abajo). |
+| **C3** | 2 byte `[0xC3, len]` + `8N` ct + 1 pad byte | **Cifrado custom 8-byte** (ver abajo). |
 
 ### 1a · C3 = cifrador CUSTOM, NO el SimpleModulus público
-- Longitudes reales **siempre `3 + 8×N`** → C2S `{11,19,27}`, S2C `{11,19,35,59}`.
-  Es decir: **header 3 bytes + N bloques de 8 bytes**.
-- El último byte = *padding size* (0..7).
-- **Contraste con el SimpleModulus público (OpenMU):** ese expande **8→11 bytes**.
-  La captura **nunca** muestra cuerpos que sean múltiplos de 11.
+- **Framing confirmado:** `[0xC3, len(1B)] [8N ciphertext] [pad(1B)]`, total `= 3 + 8N`.
+  C2S C3 `{11,19,27}` → `{2+8·1+1, 2+8·2+1, 2+8·3+1}` ✓; S2C `{11,19,35,59}` ✓.
+- El último byte = *bytes reales del último bloque* (0..7) (ej. 19B ⇒ 2 blocks ⇒ 13 bytes real).
+- **Contraste SimpleModulus público (OpenMU):** expande **8→11 bytes**.
+  La captura **nunca** muestra cuerpos múltiplos de 11.
+- **Clave observada:** los `mod` del `.dat` son de **17–18 bits** (p. ej. 128079=0x1F4B7,
+  171058=0x28F9A). `A·key % mod` ⇒ valores de 17–18 bits ⇒ **no encajan en 4×16-bit** (64 bits
+  por bloque de 8). Esto explica por qué el SimpleModulus-math 4×16-bit falla: los top-bits del
+  ciphertext confirman valores de 17–18 bits (0x80A0, 0xE76F).
 - **Consecuencia:** el `mu_proto/simple_modulus.py` del repo **NO descifra el build 1.15.14**
   (verificado: **100% de los C3 fallan** con las claves `.dat`). El tooling está **desactualizado**;
   el README lo admite ("Not verified against the current Webzen client").
+- **Reversión en curso** (subagente, `c3/findings.md`): hipótesis activas = (a) 3 valores/bloque
+  17–18 bits con overlap, (b) cipher de stream (keystream LCG/Feistel), (c) `.dat` remapeados,
+  (d) **decompilar `wsctlcd.dll`** (no packed), (e) **anchor de plaintext conocido** en el login
+  (`0xF1` + 12-byte account).
 
 ### 1b · Claves ESTÁTICAS, dentro del cliente
 - `Enc1.dat` / `Dec2.dat` (54 bytes) en `Mu\Data\`: sig `0x1112`, 12 × uint32, enmascaradas
